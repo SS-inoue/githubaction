@@ -1,0 +1,8 @@
+{
+  "name": "githubaction",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:SS-inoue/githubaction.git",
+  "author": "keisuke inoue <inoue@sophia-s.co.jp>",
+  "license": "MIT"
+}
