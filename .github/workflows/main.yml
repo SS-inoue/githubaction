@@ -22,11 +22,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - uses: butlerlogic/action-autotag@stable
-        with:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          tag_prefix: "v"
-
       # Runs a single command using the runners shell
       - name: Copy Files
         run: cp -pR src/. dist/
@@ -46,18 +41,23 @@ jobs:
         run: |
           ls -a dist
 
+      - name: Tag
+        uses: butlerlogic/action-autotag@stable
+        id: autotagger
+        with:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          tag_prefix: "v"
+
       - name: Create Release
         id: create_release
+        if: steps.autotagger.outputs.tagname != ''
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            Changes in this Release
-            - First Change
-            - Second Change
+          tag_name: ${{ steps.autotagger.outputs.tagname }}
+          release_name: Version ${{ steps.autotagger.outputs.version }}
+          body: ${{ steps.autotagger.outputs.tagmessage }}
           draft: false
           prerelease: false
 
